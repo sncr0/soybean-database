@@ -1,0 +1,6 @@
+*.tif
+*/import/*
+*/export/*
+__pycache__/
+lat/
+*_red
