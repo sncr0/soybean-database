@@ -13,54 +13,57 @@ cursor.execute("""
                USE SOYBEAN;
                """)
 
+
+
+#==========================|  PLANTATION  |=================================
 cursor.execute("""
-               CREATE TABLE IF NOT EXISTS SITES (
+               CREATE TABLE IF NOT EXISTS PLANTATION (
                    site_id INT PRIMARY KEY 
                )
                """)
 
 cursor.execute("""
-               CREATE TABLE IF NOT EXISTS EMPLOYEE (
+               CREATE TABLE IF NOT EXISTS PLANTATION_WORKER (
                    employee_id INT PRIMARY KEY,
                    site_id INT,
-                   FOREIGN KEY (site_id) REFERENCES SITES(site_id)
+                   FOREIGN KEY (site_id) REFERENCES SITE(site_id)
                )
                """)
 
 cursor.execute("""
-               CREATE TABLE IF NOT EXISTS CONTRACT (
+               CREATE TABLE IF NOT EXISTS PW_CONTRACT (
                    contract_id INT PRIMARY KEY,
                    employee_id INT,
                    site_id INT,
-                   FOREIGN KEY (employee_id) REFERENCES EMPLOYEE (employee_id),
-                   FOREIGN KEY (site_id) REFERENCES EMPLOYEE(site_id)
+                   FOREIGN KEY (employee_id) REFERENCES PLANTATION_WORKER (employee_id),
+                   FOREIGN KEY (site_id) REFERENCES PLANTATION_WORKER(site_id)
                )
                """)
 
 cursor.execute("""
-               CREATE TABLE IF NOT EXISTS TEMPORARY_CONTRACT (
+               CREATE TABLE IF NOT EXISTS PW_TEMPORARY_CONTRACT (
                    temp_contract_id INT PRIMARY KEY,
                    site_id INT,
                    employee_id INT,
                    contract_id INT,
                    start_date DATE,
                    end_date DATE,
-                   FOREIGN KEY (contract_id) REFERENCES CONTRACT (contract_id),
-                   FOREIGN KEY (site_id) REFERENCES CONTRACT (site_id),
-                   FOREIGN KEY (employee_id) REFERENCES CONTRACT (employee_id)
+                   FOREIGN KEY (contract_id) REFERENCES PW_CONTRACT (contract_id),
+                   FOREIGN KEY (site_id) REFERENCES PW_CONTRACT (site_id),
+                   FOREIGN KEY (employee_id) REFERENCES PW_CONTRACT (employee_id)
                )
                """)
 
 cursor.execute("""
-               CREATE TABLE IF NOT EXISTS PERMANENT_CONTRACT (
+               CREATE TABLE IF NOT EXISTS PW_PERMANENT_CONTRACT (
                    perm_contract_id INT PRIMARY KEY,
                    site_id INT,
                    employee_id INT,
                    contract_id INT,
                    start_date DATE,
-                   FOREIGN KEY (contract_id) REFERENCES CONTRACT (contract_id),
-                   FOREIGN KEY (site_id) REFERENCES CONTRACT(site_id),
-                   FOREIGN KEY (employee_id) REFERENCES CONTRACT (employee_id)
+                   FOREIGN KEY (contract_id) REFERENCES PW_CONTRACT (contract_id),
+                   FOREIGN KEY (site_id) REFERENCES PW_CONTRACT (site_id),
+                   FOREIGN KEY (employee_id) REFERENCES PW_CONTRACT (employee_id)
                )
                """)
 
@@ -69,8 +72,79 @@ cursor.execute("""
                    site_manager_id INT PRIMARY KEY, -- maybe we could eliminate site_manager_id and only use the foreign keys?
                    site_id INT,
                    employee_id INT,
-                   FOREIGN KEY (site_id) REFERENCES SITES(site_id),
-                   FOREIGN KEY (employee_id) REFERENCES EMPLOYEE (employee_id)
+                   FOREIGN KEY (site_id) REFERENCES SITE (site_id),
+                   FOREIGN KEY (employee_id) REFERENCES PLANTATION_WORKER (employee_id)
+               )
+               """)
+
+cursor.execute("""
+               CREATE TABLE IF NOT EXISTS PW_WORKS_AT_SITE (
+                   employee_id INT,
+                   site_id INT,
+                   FOREIGN KEY (site_id) REFERENCES SITE(site_id),
+                   FOREIGN KEY (employee_id) REFERENCES PLANTATION_WORKER (employee_id)
+               )
+               """)
+
+#==========================|  SITE  |=================================
+cursor.execute("""
+               CREATE TABLE IF NOT EXISTS SITE (
+                   site_id INT PRIMARY KEY 
+               )
+               """)
+
+cursor.execute("""
+               CREATE TABLE IF NOT EXISTS SITE_WORKER (
+                   employee_id INT PRIMARY KEY,
+                   site_id INT,
+                   FOREIGN KEY (site_id) REFERENCES SITE(site_id)
+               )
+               """)
+
+cursor.execute("""
+               CREATE TABLE IF NOT EXISTS SW_CONTRACT (
+                   contract_id INT PRIMARY KEY,
+                   employee_id INT,
+                   site_id INT,
+                   FOREIGN KEY (employee_id) REFERENCES SITE_WORKER (employee_id),
+                   FOREIGN KEY (site_id) REFERENCES SITE_WORKER (site_id)
+               )
+               """)
+
+cursor.execute("""
+               CREATE TABLE IF NOT EXISTS SW_TEMPORARY_CONTRACT (
+                   temp_contract_id INT PRIMARY KEY,
+                   site_id INT,
+                   employee_id INT,
+                   contract_id INT,
+                   start_date DATE,
+                   end_date DATE,
+                   FOREIGN KEY (contract_id) REFERENCES SW_CONTRACT (contract_id),
+                   FOREIGN KEY (site_id) REFERENCES SW_CONTRACT (site_id),
+                   FOREIGN KEY (employee_id) REFERENCES SW_CONTRACT (employee_id)
+               )
+               """)
+
+cursor.execute("""
+               CREATE TABLE IF NOT EXISTS SW_PERMANENT_CONTRACT (
+                   perm_contract_id INT PRIMARY KEY,
+                   site_id INT,
+                   employee_id INT,
+                   contract_id INT,
+                   start_date DATE,
+                   FOREIGN KEY (contract_id) REFERENCES SW_CONTRACT (contract_id),
+                   FOREIGN KEY (site_id) REFERENCES SW_CONTRACT (site_id),
+                   FOREIGN KEY (employee_id) REFERENCES SW_CONTRACT (employee_id)
+               )
+               """)
+
+cursor.execute("""
+               CREATE TABLE IF NOT EXISTS SITE_MANAGER (
+                   site_manager_id INT PRIMARY KEY, -- maybe we could eliminate site_manager_id and only use the foreign keys?
+                   site_id INT,
+                   employee_id INT,
+                   FOREIGN KEY (site_id) REFERENCES SITE(site_id),
+                   FOREIGN KEY (employee_id) REFERENCES SITE_WORKER (employee_id)
                )
                """)
 
@@ -81,21 +155,21 @@ cursor.execute("""
                """)
 
 cursor.execute("""
-               CREATE TABLE IF NOT EXISTS WORKS_AT_SITE (
+               CREATE TABLE IF NOT EXISTS SW_WORKS_AT_SITE (
                    employee_id INT,
                    site_id INT,
-                   FOREIGN KEY (site_id) REFERENCES SITES(site_id),
-                   FOREIGN KEY (employee_id) REFERENCES EMPLOYEE(employee_id)
+                   FOREIGN KEY (site_id) REFERENCES SITE(site_id),
+                   FOREIGN KEY (employee_id) REFERENCES SITE_WORKER(employee_id)
                )
                """)
 
 # cursor.execute("""
 #                CREATE TABLE IF NOT EXISTS SUPPLIES (
-#                    supplier_id INT,
+#                    plantation_id INT,
 #                    site_id INT,
 #                    inventory_id INT,
 #                    FOREIGN KEY (supplier_id) REFERENCES SUPPLIER (supplier_id),
-#                    FOREIGN KEY (site_id) REFERENCES SITES(site_id),
+#                    FOREIGN KEY (site_id) REFERENCES SITE(site_id),
 #                      FOREIGN KEY (inventory_id) REFERENCES INVENTORY (inventory_id)
 #                )
 #                """)
@@ -103,10 +177,10 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS INVENTORY (
                    inventory_id INT PRIMARY KEY, -- we maybe want this to be a standalone key, but still reference supplier and site (not sure if there is proper syntax for this)
-                   supplier_id INT,
+                    plantation_id INT,
                    site_id INT,
-                   FOREIGN KEY (supplier_id) REFERENCES SUPPLIER (supplier_id),
-                   FOREIGN KEY (site_id) REFERENCES SITES(site_id)
+                   FOREIGN KEY (supplier_id) REFERENCES SUPPLIER (plantation_id),
+                   FOREIGN KEY (site_id) REFERENCES SITE (site_id)
                )
                """)
 
