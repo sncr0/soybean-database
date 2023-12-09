@@ -18,15 +18,15 @@ cursor.execute("""
 #==========================|  PLANTATION  |=================================
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS PLANTATION (
-                   site_id INT PRIMARY KEY 
+                   plantation_id INT PRIMARY KEY 
                )
                """)
 
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS PLANTATION_WORKER (
                    employee_id INT PRIMARY KEY,
-                   site_id INT,
-                   FOREIGN KEY (site_id) REFERENCES SITE(site_id)
+                   plantation_id INT,
+                   FOREIGN KEY (plantation_id) REFERENCES PLANTATION(plantation_id)
                )
                """)
 
@@ -34,22 +34,22 @@ cursor.execute("""
                CREATE TABLE IF NOT EXISTS PW_CONTRACT (
                    contract_id INT PRIMARY KEY,
                    employee_id INT,
-                   site_id INT,
+                   plantation_id INT,
                    FOREIGN KEY (employee_id) REFERENCES PLANTATION_WORKER (employee_id),
-                   FOREIGN KEY (site_id) REFERENCES PLANTATION_WORKER(site_id)
+                   FOREIGN KEY (plantation_id) REFERENCES PLANTATION_WORKER(plantation_id)
                )
                """)
 
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS PW_TEMPORARY_CONTRACT (
                    temp_contract_id INT PRIMARY KEY,
-                   site_id INT,
+                   plantation_id INT,
                    employee_id INT,
                    contract_id INT,
                    start_date DATE,
                    end_date DATE,
                    FOREIGN KEY (contract_id) REFERENCES PW_CONTRACT (contract_id),
-                   FOREIGN KEY (site_id) REFERENCES PW_CONTRACT (site_id),
+                   FOREIGN KEY (plantation_id) REFERENCES PW_CONTRACT (plantation_id),
                    FOREIGN KEY (employee_id) REFERENCES PW_CONTRACT (employee_id)
                )
                """)
@@ -57,31 +57,31 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS PW_PERMANENT_CONTRACT (
                    perm_contract_id INT PRIMARY KEY,
-                   site_id INT,
+                   plantation_id INT,
                    employee_id INT,
                    contract_id INT,
                    start_date DATE,
                    FOREIGN KEY (contract_id) REFERENCES PW_CONTRACT (contract_id),
-                   FOREIGN KEY (site_id) REFERENCES PW_CONTRACT (site_id),
+                   FOREIGN KEY (plantation_id) REFERENCES PW_CONTRACT (plantation_id),
                    FOREIGN KEY (employee_id) REFERENCES PW_CONTRACT (employee_id)
                )
                """)
 
 cursor.execute("""
-               CREATE TABLE IF NOT EXISTS SITE_MANAGER (
-                   site_manager_id INT PRIMARY KEY, -- maybe we could eliminate site_manager_id and only use the foreign keys?
-                   site_id INT,
+               CREATE TABLE IF NOT EXISTS PLANTATION_MANAGER (
+                   plantation_manager_id INT PRIMARY KEY, -- maybe we could eliminate site_manager_id and only use the foreign keys?
+                   plantation_id INT,
                    employee_id INT,
-                   FOREIGN KEY (site_id) REFERENCES SITE (site_id),
+                   FOREIGN KEY (plantation_id) REFERENCES PLANTATION (plantation_id),
                    FOREIGN KEY (employee_id) REFERENCES PLANTATION_WORKER (employee_id)
                )
                """)
 
 cursor.execute("""
-               CREATE TABLE IF NOT EXISTS PW_WORKS_AT_SITE (
+               CREATE TABLE IF NOT EXISTS WORKS_AT_PLANTATION (
                    employee_id INT,
-                   site_id INT,
-                   FOREIGN KEY (site_id) REFERENCES SITE(site_id),
+                   plantation_id INT,
+                   FOREIGN KEY (plantation_id) REFERENCES PLANTATION(plantation_id),
                    FOREIGN KEY (employee_id) REFERENCES PLANTATION_WORKER (employee_id)
                )
                """)
@@ -155,7 +155,7 @@ cursor.execute("""
                """)
 
 cursor.execute("""
-               CREATE TABLE IF NOT EXISTS SW_WORKS_AT_SITE (
+               CREATE TABLE IF NOT EXISTS WORKS_AT_SITE (
                    employee_id INT,
                    site_id INT,
                    FOREIGN KEY (site_id) REFERENCES SITE(site_id),
@@ -177,9 +177,9 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS INVENTORY (
                    inventory_id INT PRIMARY KEY, -- we maybe want this to be a standalone key, but still reference supplier and site (not sure if there is proper syntax for this)
-                    plantation_id INT,
+                   plantation_id INT,
                    site_id INT,
-                   FOREIGN KEY (supplier_id) REFERENCES SUPPLIER (plantation_id),
+                   FOREIGN KEY (plantation_id) REFERENCES PLANTATION (plantation_id),
                    FOREIGN KEY (site_id) REFERENCES SITE (site_id)
                )
                """)
@@ -188,9 +188,9 @@ cursor.execute("""
                CREATE TABLE IF NOT EXISTS BATCH (
                    batch_id INT PRIMARY KEY,
                    inventory_id INT,
-                   supplier_id INT,
+                   plantation_id INT,
                    site_id INT,
-                   FOREIGN KEY (supplier_id) REFERENCES INVENTORY (supplier_id),
+                   FOREIGN KEY (plantation_id) REFERENCES INVENTORY (plantation_id),
                    FOREIGN KEY (site_id) REFERENCES INVENTORY (site_id),
                    FOREIGN KEY (inventory_id) REFERENCES INVENTORY (inventory_id)
                )
@@ -201,9 +201,9 @@ cursor.execute("""
                    ipc_id INT PRIMARY KEY,
                    batch_id INT,
                    inventory_id INT,
-                   supplier_id INT,
+                   plantation_id INT,
                    site_id INT,
-                   FOREIGN KEY (supplier_id) REFERENCES BATCH (supplier_id),
+                   FOREIGN KEY (plantation_id) REFERENCES BATCH (plantation_id),
                    FOREIGN KEY (site_id) REFERENCES BATCH (site_id),
                    FOREIGN KEY (inventory_id) REFERENCES BATCH (inventory_id),
                    FOREIGN KEY (batch_id) REFERENCES BATCH (batch_id)
@@ -215,9 +215,9 @@ cursor.execute("""
                    stock_id INT PRIMARY KEY,
                    batch_id INT,
                    inventory_id INT,
-                   supplier_id INT,
+                   plantation_id INT,
                    site_id INT,
-                   FOREIGN KEY (supplier_id) REFERENCES BATCH (supplier_id),
+                   FOREIGN KEY (plantation_id) REFERENCES BATCH (plantation_id),
                    FOREIGN KEY (site_id) REFERENCES BATCH (site_id),
                    FOREIGN KEY (inventory_id) REFERENCES BATCH (inventory_id),
                    FOREIGN KEY (batch_id) REFERENCES BATCH (batch_id)
@@ -232,24 +232,24 @@ cursor.execute("""
 
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS SALES_DEPARTMENT (
-                   department_id INT PRIMARY KEY,
-                   department_name VARCHAR(255) -- Add additional fields as needed
+                   sales_department_id INT PRIMARY KEY,
+                   sales_department_name VARCHAR(255) -- Add additional fields as needed
                )
                """)
 
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS SALES_MANAGER (
                    sales_manager_id INT PRIMARY KEY,
-                   department_id INT,
-                   FOREIGN KEY (department_id) REFERENCES SALES_DEPARTMENT (department_id)
+                   sales_department_id INT,
+                   FOREIGN KEY (sales_department_id) REFERENCES SALES_DEPARTMENT (sales_department_id)
                )
                """)
 
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS SALES_ASSOCIATE (
                    sales_associate_id INT PRIMARY KEY,
-                   department_id INT,
-                   FOREIGN KEY (department_id) REFERENCES SALES_DEPARTMENT (department_id)
+                   sales_department_id INT,
+                   FOREIGN KEY (sales_department_id) REFERENCES SALES_DEPARTMENT (sales_department_id)
                )
                """)
 
@@ -261,12 +261,12 @@ cursor.execute("""
                    stock_id INT,
                    batch_id INT,
                    inventory_id INT,
-                   supplier_id INT,
+                   plantation_id INT,
                    site_id INT,
                    FOREIGN KEY (sales_associate_id) REFERENCES SALES_ASSOCIATE (sales_associate_id),
                    FOREIGN KEY (client_id) REFERENCES CLIENT(client_id),
                    FOREIGN KEY (stock_id) REFERENCES STOCK(stock_id),
-                   FOREIGN KEY (supplier_id) REFERENCES STOCK (supplier_id),
+                   FOREIGN KEY (plantation_id) REFERENCES STOCK (plantation_id),
                    FOREIGN KEY (site_id) REFERENCES STOCK (site_id),
                    FOREIGN KEY (inventory_id) REFERENCES STOCK (inventory_id),
                    FOREIGN KEY (batch_id) REFERENCES STOCK (batch_id)
