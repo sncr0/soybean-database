@@ -2,11 +2,12 @@
 Arjun Dewani & Samuel Moerman
 
 ## Part I
-- Modify the ER diagram to reflect the "farming" part too
+v Modify the ER diagram to reflect the "farming" part too
 
 ## Part II
-- Modify relational database to accurately reflect new ER diagram
-- Complete population step
+v Modify relational database to accurately reflect new ER diagram
+v Complete population step
+- Modify population step to include salary for workers.
 
 ## Part III
 - Migrate ML model to cloud
