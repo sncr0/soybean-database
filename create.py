@@ -13,9 +13,9 @@ cursor.execute("""
                USE SOYBEAN;
                """)
 
-cursor.execute("""
-               CREATE TYPE EmploymentType AS ENUM ('temporary', 'permanent');
-               """)
+# cursor.execute("""
+#                CREATE TYPE EmploymentType AS ENUM ('temporary', 'permanent');
+#                """)
 
 
 
@@ -33,7 +33,7 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS PLANTATION_WORKER (
                    -- primary key:
-                   employee_id UUID PRIMARY KEY,
+                   employee_id VARCHAR(36) PRIMARY KEY,
                    
                    -- foreign key:
                     plantation_name VARCHAR(255),
@@ -50,14 +50,14 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS PW_CONTRACT (
                    -- primary key:
-                   contract_id UUID PRIMARY KEY,
+                   contract_id VARCHAR(36) PRIMARY KEY,
                    
                    -- foreign key:
-                   employee_id UUID,
+                   employee_id VARCHAR(36),
                    plantation_name VARCHAR(255),
                    
                    -- extra:
-                   contract_type EmploymentType,
+                   contract_type ENUM('temporary', 'permanent'),
                    
                    FOREIGN KEY (employee_id) REFERENCES PLANTATION_WORKER (employee_id),
                    FOREIGN KEY (plantation_name) REFERENCES PLANTATION_WORKER (plantation_name)
@@ -67,12 +67,12 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS PW_TEMPORARY_CONTRACT (
                    -- primary key:
-                   temp_contract_id UUID PRIMARY KEY,
+                   temp_contract_id VARCHAR(36) PRIMARY KEY,
                    
                    -- foreign key:
                    plantation_name VARCHAR(255),
-                   employee_id UUID,
-                   contract_id UUID,
+                   employee_id VARCHAR(36),
+                   contract_id VARCHAR(36),
                    
                    -- extra:
                    salary INT,
@@ -88,14 +88,14 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS PW_PERMANENT_CONTRACT (
                    -- primary key:
-                   perm_contract_id INT PRIMARY KEY,
+                   perm_contract_id VARCHAR(36) PRIMARY KEY,
                    
                    -- foreign key:
                    plantation_name VARCHAR(255),
-                   employee_id UUID,
-                   contract_id UUID,
+                   employee_id VARCHAR(36),
+                   contract_id VARCHAR(36),
                    
-                   --extra:
+                   -- extra:
                    salary INT,
                    start_date DATE,
                    
@@ -108,23 +108,13 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS PLANTATION_MANAGER (
                    -- primary key:
-                   plantation_manager_id UUID PRIMARY KEY, -- maybe we could eliminate site_manager_id and only use the foreign keys?
+                   plantation_manager_id VARCHAR(36) PRIMARY KEY, -- maybe we could eliminate site_manager_id and only use the foreign keys?
                    
                    -- foreign key:
                    plantation_name VARCHAR(255),
-                   employee_id UUID,
+                   employee_id VARCHAR(36),
                    
                    FOREIGN KEY (plantation_name) REFERENCES PLANTATION (plantation_name),
-                   FOREIGN KEY (employee_id) REFERENCES PLANTATION_WORKER (employee_id)
-               )
-               """)
-
-# 99% sure we don't need this
-cursor.execute("""
-               CREATE TABLE IF NOT EXISTS WORKS_AT_PLANTATION (
-                   employee_id INT,
-                   plantation_id INT,
-                   FOREIGN KEY (plantation_id) REFERENCES PLANTATION(plantation_id),
                    FOREIGN KEY (employee_id) REFERENCES PLANTATION_WORKER (employee_id)
                )
                """)
@@ -140,7 +130,7 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS SITE_WORKER (
                    -- primary key:
-                   employee_id UUID PRIMARY KEY,
+                   employee_id VARCHAR(36) PRIMARY KEY,
                    
                    -- foreign key: 
                    site_name VARCHAR(255),
@@ -152,11 +142,14 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS SW_CONTRACT (
                    -- primary key:
-                   contract_id UUID PRIMARY KEY,
+                   contract_id VARCHAR(36) PRIMARY KEY,
                    
                    -- foreign key:
-                   employee_id UUID,
+                   employee_id VARCHAR(36),
                    site_name VARCHAR(255),
+                   
+                   -- extra:
+                   contract_type ENUM('temporary', 'permanent'),
                    
                    FOREIGN KEY (employee_id) REFERENCES SITE_WORKER (employee_id),
                    FOREIGN KEY (site_name) REFERENCES SITE_WORKER (site_name)
@@ -166,12 +159,12 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS SW_TEMPORARY_CONTRACT (
                    -- primary key:
-                   temp_contract_id INT PRIMARY KEY,
+                   temp_contract_id VARCHAR(36) PRIMARY KEY,
                    
                    -- foreign key:
                    site_name VARCHAR(255),
-                   employee_id UUID,
-                   contract_id UUID,
+                   employee_id VARCHAR(36),
+                   contract_id VARCHAR(36),
                    
                    -- extra:
                    salary INT,
@@ -187,14 +180,14 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS SW_PERMANENT_CONTRACT (
                    -- primary key:
-                   perm_contract_id UUID PRIMARY KEY,
+                   perm_contract_id VARCHAR(36) PRIMARY KEY,
                    
                    -- foreign key:
                    site_name VARCHAR(255),
-                   employee_id UUID,
-                   contract_id UUID,
+                   employee_id VARCHAR(36),
+                   contract_id VARCHAR(36),
                    
-                   --extra:
+                   -- extra:
                    salary INT,
                    start_date DATE,
                    
@@ -207,51 +200,22 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS SITE_MANAGER (
                    -- primary key:
-                   site_manager_id UUUID PRIMARY KEY, -- maybe we could eliminate site_manager_id and only use the foreign keys?
+                   site_manager_id VARCHAR(36) PRIMARY KEY, -- maybe we could eliminate site_manager_id and only use the foreign keys?
                    
                    -- foreign key:
                    site_name VARCHAR(255),
-                   employee_id UUID,
+                   employee_id VARCHAR(36),
                    
-                   FOREIGN KEY (site_id) REFERENCES SITE(site_id),
+                   FOREIGN KEY (site_name) REFERENCES SITE(site_name),
                    FOREIGN KEY (employee_id) REFERENCES SITE_WORKER (employee_id)
                )
                """)
-
-## 99% sure we dont need this
-cursor.execute("""
-               CREATE TABLE IF NOT EXISTS SUPPLIER (
-                   supplier_id INT PRIMARY KEY
-               )
-               """)
-
-
-## 99% sure we dont need this
-cursor.execute("""
-               CREATE TABLE IF NOT EXISTS WORKS_AT_SITE (
-                   employee_id INT,
-                   site_id INT,
-                   FOREIGN KEY (site_id) REFERENCES SITE(site_id),
-                   FOREIGN KEY (employee_id) REFERENCES SITE_WORKER(employee_id)
-               )
-               """)
-
-# cursor.execute("""
-#                CREATE TABLE IF NOT EXISTS SUPPLIES (
-#                    plantation_id INT,
-#                    site_id INT,
-#                    inventory_id INT,
-#                    FOREIGN KEY (supplier_id) REFERENCES SUPPLIER (supplier_id),
-#                    FOREIGN KEY (site_id) REFERENCES SITE(site_id),
-#                      FOREIGN KEY (inventory_id) REFERENCES INVENTORY (inventory_id)
-#                )
-#                """)
 
 # ================================|  PRODUCTION  |=================================
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS INVENTORY (
                    -- primary key:
-                   -- inventory_id UUID PRIMARY KEY, -- we maybe want this to be a standalone key, but still reference supplier and site (not sure if there is proper syntax for this)
+                   -- inventory_id VARCHAR(36) PRIMARY KEY, -- we maybe want this to be a standalone key, but still reference supplier and site (not sure if there is proper syntax for this)
                    harvest_date DATE PRIMARY KEY, 
                    
                    -- foreign key:
@@ -266,9 +230,9 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS BATCH (
                    -- primary key:
-                   synthesis_unit INT PRIMARY KEY,
-                   production_date DATE PRIMARY KEY,
-                   --batch_id UUID PRIMARY KEY,
+                   production_unit INT,
+                   production_date DATE,
+                   PRIMARY KEY (production_unit, production_date),
                    
                    -- foreign key:
                    harvest_date DATE,
@@ -284,10 +248,10 @@ cursor.execute("""
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS IPC (
                    -- primary key:
-                   ipc_id UUID PRIMARY KEY,
+                   ipc_id VARCHAR(36) PRIMARY KEY,
                    
                    -- foreign key:
-                   synthesis_unit INT,
+                   production_unit INT,
                    production_date DATE,
                    harvest_date DATE,
                    plantation_name VARCHAR(255),
@@ -296,26 +260,28 @@ cursor.execute("""
                    FOREIGN KEY (plantation_name) REFERENCES BATCH (plantation_name),
                    FOREIGN KEY (site_name) REFERENCES BATCH (site_name),
                    FOREIGN KEY (harvest_date) REFERENCES BATCH (harvest_date),
-                   FOREIGN KEY (synthesis_unit) REFERENCES BATCH (synthesis_unit),
-                   FOREIGN KEY (synthesis_date) REFERENCES BATCH
+                   FOREIGN KEY (production_unit, production_date) REFERENCES BATCH (production_unit, production_date)
+                   -- FOREIGN KEY (production_date) REFERENCES BATCH (production_date)
                )
                """)
 
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS STOCK (
                    -- primary key:
-                   stock_id INT PRIMARY KEY,
+                   package_date DATE PRIMARY KEY,
                    
                    -- secondary key:
-                   synthesis_unit INT,
+                   production_unit INT,
+                   production_date DATE,
                    harvest_date DATE,
                    plantation_name VARCHAR(255),
                    site_name VARCHAR(255),
                    
-                   FOREIGN KEY (plantation_id) REFERENCES BATCH (plantation_id),
-                   FOREIGN KEY (site_id) REFERENCES BATCH (site_id),
-                   FOREIGN KEY (inventory_id) REFERENCES BATCH (inventory_id),
-                   FOREIGN KEY (batch_id) REFERENCES BATCH (batch_id)
+                   FOREIGN KEY (plantation_name) REFERENCES BATCH (plantation_name),
+                   FOREIGN KEY (site_name) REFERENCES BATCH (site_name),
+                   FOREIGN KEY (harvest_date) REFERENCES BATCH (harvest_date),
+                   FOREIGN KEY (production_unit, production_date) REFERENCES BATCH (production_unit, production_date)
+                   -- FOREIGN KEY (production_date) REFERENCES BATCH (production_date)
                )
                """)
 
@@ -353,18 +319,20 @@ cursor.execute("""
                    sale_id INT PRIMARY KEY,
                    sales_associate_id INT,
                    client_id INT,
-                   stock_id INT,
-                   batch_id INT,
-                   inventory_id INT,
-                   plantation_id INT,
-                   site_id INT,
+                   package_date DATE,
+                   production_unit INT,
+                   production_date DATE,
+                   harvest_date DATE,
+                   plantation_name VARCHAR(255),
+                   site_name VARCHAR(255),
                    FOREIGN KEY (sales_associate_id) REFERENCES SALES_ASSOCIATE (sales_associate_id),
                    FOREIGN KEY (client_id) REFERENCES CLIENT(client_id),
-                   FOREIGN KEY (stock_id) REFERENCES STOCK(stock_id),
-                   FOREIGN KEY (plantation_id) REFERENCES STOCK (plantation_id),
-                   FOREIGN KEY (site_id) REFERENCES STOCK (site_id),
-                   FOREIGN KEY (inventory_id) REFERENCES STOCK (inventory_id),
-                   FOREIGN KEY (batch_id) REFERENCES STOCK (batch_id)
+                   FOREIGN KEY (package_date) REFERENCES STOCK(package_date),
+                   FOREIGN KEY (plantation_name) REFERENCES STOCK (plantation_name),
+                   FOREIGN KEY (site_name) REFERENCES STOCK (site_name),
+                   FOREIGN KEY (harvest_date) REFERENCES STOCK (harvest_date),
+                   FOREIGN KEY (production_unit, production_date) REFERENCES STOCK (production_unit, production_date)
+                   -- FOREIGN KEY (production_date) REFERENCES STOCK (production_date)
                )
                """)
 cursor.execute("""

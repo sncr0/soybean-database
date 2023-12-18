@@ -37,3 +37,4 @@ def disconnect_from_database(connection, cursor):
 
     except Exception as e:
         print(f"Error during disconnection: {e}")
+        
