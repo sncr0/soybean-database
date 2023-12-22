@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .purchase-btn {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Inventory</h1>
+        <form action="/purchase" method="post">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Plantation Name</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory_data %}
+                        <tr>
+                            <td>{{ item.plantation_name }}</td>
+                            <td>{{ item.price }}</td>
+                            <td>
+                                <input type="hidden" name="package_date" value="{{ item.package_date }}">
+                                <input type="hidden" name="production_unit" value="{{ item.production_unit }}">
+                                <input type="hidden" name="production_date" value="{{ item.production_date }}">
+                                <input type="hidden" name="harvest_date" value="{{ item.harvest_date }}">
+                                <input type="hidden" name="plantation_name" value="{{ item.plantation_name }}">
+                                <input type="hidden" name="field_number" value="{{ item.field_number }}">
+                                <input type="hidden" name="site_name" value="{{ item.site_name }}">
+                                <button type="submit" class="purchase-btn">Buy</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+</body>
+</html>
+
+
