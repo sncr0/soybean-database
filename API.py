@@ -1169,7 +1169,7 @@ class Database_API:
                 WHERE field_number = {index} AND plantation_name = '{plantation_name}'""")
         
     def push_to_azure(self, FIELD: FIELD, np_array, date = str(datetime.now().date())):
-        connection_string = "DefaultEndpointsProtocol=https;AccountName=dbmsproject3372167329;AccountKey=XzgPmqFPIqmL124I4WbyWgNTjMKni+BBr/zenqcQCub1WdaRrV7ojg+vGIU2StRwMLHve+4d5mTa+AStJYLgvw==;EndpointSuffix=core.windows.net"
+        connection_string = "DefaultEndpointsProtocol=https;AccountName=dbmsproject3372167329;AccountKey=XzgPmqvGIU2StRwMLHve+4d5mTa+AStJYLgvw==;EndpointSuffix=core.windows.net"
         blob_service_client = BlobServiceClient.from_connection_string(connection_string)
         container_client = blob_service_client.get_container_client("field-images")
 
